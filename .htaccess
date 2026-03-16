@@ -1,0 +1,35 @@
+RewriteEngine On
+RewriteBase /portafolio/Sistema_TCAD_Celulas/
+
+# Permitir archivos reales (archivos y directorios que existen)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Permitir acceso directo a carpeta api/ (todos los archivos PHP)
+RewriteCond %{REQUEST_URI} ^/portafolio/Sistema_TCAD_Celulas/api/
+RewriteRule ^ - [L]
+
+# Redirigir todo lo demas a index.php (excepto archivos reales)
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Configuracion de compresion
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE text/xml
+</IfModule>
+
+# Cache de navegador
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType text/css "access 1 week"
+    ExpiresByType application/javascript "access 1 week"
+</IfModule>
+
