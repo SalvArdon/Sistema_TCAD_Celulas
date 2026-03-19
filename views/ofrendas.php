@@ -24,6 +24,42 @@ validarRol(['pastor','tesorero','lider_area','lider_celula']);
 
         <main class="flex-1 lg:ml-64 p-3 sm:p-5 min-w-0 overflow-x-hidden" data-base-url="<?php echo BASE_URL; ?>" data-user-role="<?php echo $_SESSION['rol_nombre'] ?? ($_SESSION['rol'] ?? ''); ?>">
             <div class="w-full lg:max-w-screen-lg mx-auto space-y-6 min-w-0">
+                <?php if (in_array($_SESSION['rol_nombre'] ?? ($_SESSION['rol'] ?? ''), ['pastor','tesorero'])): ?>
+                <!-- Dashboard financiero -->
+                <section class="bg-white rounded-xl shadow p-4 sm:p-6 space-y-4">
+                    <h2 class="text-lg font-semibold text-gray-800">Dashboard financiero</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-indigo-50 rounded-lg p-4">
+                            <p class="text-xs text-indigo-700">Total mes</p>
+                            <p id="card-mes-actual" class="text-2xl font-bold text-indigo-900">$0.00</p>
+                        </div>
+                        <div class="bg-emerald-50 rounded-lg p-4">
+                            <p class="text-xs text-emerald-700">Variación vs mes anterior</p>
+                            <p id="card-variacion" class="text-2xl font-bold text-emerald-900">—</p>
+                        </div>
+                        <div class="bg-amber-50 rounded-lg p-4">
+                            <p class="text-xs text-amber-700">Reportadas pendientes</p>
+                            <p id="card-pendientes" class="text-2xl font-bold text-amber-900">0</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <canvas id="chart-ofrendas" height="200"></canvas>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">Top por área (mes)</p>
+                            <table class="min-w-full text-sm">
+                                <thead class="text-gray-500">
+                                    <tr><th class="text-left px-3 py-2">Área</th><th class="text-right px-3 py-2">Total</th><th class="text-right px-3 py-2">Reportes</th></tr>
+                                </thead>
+                                <tbody id="tabla-areas"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="dash-error" class="hidden text-sm text-red-600">No se pudo cargar el dashboard.</div>
+                </section>
+                <?php endif; ?>
+
                 <div class="flex items-start sm:items-center justify-between">
                     <div>
                         <p class="text-xs sm:text-sm text-gray-500">Gestión / Ofrendas</p>
@@ -176,5 +212,10 @@ validarRol(['pastor','tesorero','lider_area','lider_celula']);
 
     <?php $verJs = @filemtime(__DIR__ . '/../assets/js/ofrendas.js'); ?>
     <script src="<?php echo BASE_URL; ?>assets/js/ofrendas.js?v=<?php echo $verJs ?: time(); ?>"></script>
+    <?php if (in_array($_SESSION['rol_nombre'] ?? ($_SESSION['rol'] ?? ''), ['pastor','tesorero'])): ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <?php $verDash = @filemtime(__DIR__ . '/../assets/js/ofrendas-dashboard.js'); ?>
+    <script src="<?php echo BASE_URL; ?>assets/js/ofrendas-dashboard.js?v=<?php echo $verDash ?: time(); ?>"></script>
+    <?php endif; ?>
 </body>
 </html>

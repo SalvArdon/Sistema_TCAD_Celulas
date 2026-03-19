@@ -4,9 +4,10 @@
   let paginaActual = 1;
   let totalPaginas = 1;
   let celulas = [];
+  let areas = [];
 
   document.addEventListener('DOMContentLoaded', () => {
-    cargarCelulas();
+    cargarAreas().then(cargarCelulas);
     cargarReuniones();
     const realizada = document.getElementById('realizada');
     if (realizada) {
@@ -17,9 +18,30 @@
     }
   });
 
+  async function cargarAreas() {
+    try {
+      const resp = await fetch(`${BASE_URL}api/areas.php?accion=listar&estado=activa&limite=500`);
+      const json = await resp.json();
+      areas = json.data || [];
+      const sel = document.getElementById('filtro-area');
+      if (sel) {
+        sel.innerHTML = '<option value=\"\">Todas</option>';
+        areas.forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.id;
+          opt.textContent = a.nombre;
+          sel.appendChild(opt);
+        });
+      }
+    } catch (e) { console.error(e); }
+  }
+
   async function cargarCelulas() {
     try {
-      const resp = await fetch(`${BASE_URL}api/celulas.php?accion=listar&estado=activa&limite=500`);
+      const params = new URLSearchParams({ accion: 'listar', estado: 'activa', limite: 500 });
+      const area = document.getElementById('filtro-area')?.value || '';
+      if (area) params.append('area_id', area);
+      const resp = await fetch(`${BASE_URL}api/celulas.php?${params.toString()}`);
       const json = await resp.json();
       celulas = json.data || [];
       pintarSugerencias('');
@@ -33,12 +55,14 @@
     setLoading(true);
     const estado = document.getElementById('filtro-estado')?.value || '';
     const celula_id = document.getElementById('filtro-celula-id')?.value || '';
+    const area_id = document.getElementById('filtro-area')?.value || '';
     const inicio = document.getElementById('filtro-inicio')?.value || '';
     const fin = document.getElementById('filtro-fin')?.value || '';
 
     const params = new URLSearchParams({ accion: 'listar', pagina: paginaActual });
     if (estado) params.append('estado', estado);
     if (celula_id) params.append('celula_id', celula_id);
+    if (area_id) params.append('area_id', area_id);
     if (inicio) params.append('fecha_inicio', inicio);
     if (fin) params.append('fecha_fin', fin);
 
@@ -161,6 +185,7 @@
     document.getElementById('filtro-estado').value = '';
     document.getElementById('filtro-celula-search').value = '';
     document.getElementById('filtro-celula-id').value = '';
+    document.getElementById('filtro-area').value = '';
     document.getElementById('filtro-celula-suggestions')?.classList.add('hidden');
     document.getElementById('filtro-inicio').value = '';
     document.getElementById('filtro-fin').value = '';

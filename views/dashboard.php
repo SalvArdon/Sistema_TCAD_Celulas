@@ -98,6 +98,20 @@
                 </div>
             </div>
 
+            <?php if (in_array($_SESSION['rol_nombre'] ?? ($_SESSION['rol'] ?? ''), ['pastor','tesorero'])): ?>
+            <!-- Mini dashboard Ofrendas -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                <div class="bg-green-50 rounded-lg shadow p-5 border-l-4 border-green-600">
+                    <p class="text-xs text-green-700">Ofrendas mes (visor)</p>
+                    <p id="mini-ofr-mes" class="text-3xl font-bold text-green-800">$0.00</p>
+                </div>
+                <div class="bg-emerald-50 rounded-lg shadow p-5 border-l-4 border-emerald-600">
+                    <p class="text-xs text-emerald-700">Variación vs mes anterior</p>
+                    <p id="mini-ofr-var" class="text-3xl font-bold text-emerald-800">—</p>
+                </div>
+            </div>
+            <?php endif; ?>
+
         <!-- Gráficas -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Gráfica: Asistencia por Mes -->
@@ -160,6 +174,7 @@
 
     <script>
         const BASE_URL = '<?php echo BASE_URL; ?>';
+        const USER_ROLE = '<?php echo $_SESSION['rol_nombre'] ?? ($_SESSION['rol'] ?? ''); ?>';
         let chartAsistencia, chartOfrendas, chartCelulas, chartServidores;
 
         // Mostrar fecha actual
@@ -203,8 +218,38 @@
                     mostrarUltimasReuniones(datos.ultimas_reuniones);
                 }
 
+                // Widget ofrendas resumido
+                if (['pastor','tesorero'].includes(USER_ROLE)) {
+                    cargarMiniOfrendas();
+                }
+
             } catch (error) {
                 console.error('Error:', error);
+            }
+        }
+
+        async function cargarMiniOfrendas() {
+            try {
+                const resp = await fetch(BASE_URL + 'api/ofrendas.php?accion=dashboard-tesorero');
+                const json = await resp.json();
+                if (!json.exito) return;
+                const totales = json.data?.totales || {};
+                const mes = typeof totales.mes_actual === 'number' ? totales.mes_actual : 0;
+                const varpct = totales.variacion_pct;
+                const elMes = document.getElementById('mini-ofr-mes');
+                const elVar = document.getElementById('mini-ofr-var');
+                if (elMes) elMes.textContent = '$' + mes.toFixed(2);
+                if (elVar) {
+                    if (varpct === null || varpct === undefined) {
+                        elVar.textContent = '—';
+                        elVar.className = 'text-3xl font-bold text-gray-700';
+                    } else {
+                        elVar.textContent = varpct.toFixed(1) + '%';
+                        elVar.className = 'text-3xl font-bold ' + (varpct >= 0 ? 'text-emerald-700' : 'text-red-700');
+                    }
+                }
+            } catch (e) {
+                console.error(e);
             }
         }
 

@@ -54,6 +54,11 @@ class OfrendaController {
         return ['exito'=>true,'data'=>$hist];
     }
 
+    public function historialDetallado($id) {
+        $hist = $this->ofrendaModel->obtenerHistorialDetallado($id);
+        return ['exito'=>true,'data'=>$hist];
+    }
+
     public function eliminar($id) {
         return $this->ofrendaModel->eliminar($id);
     }
@@ -170,16 +175,27 @@ class OfrendaController {
      * Obtener dashboard de tesorero
      */
     public function obtenerDashboardTesorero() {
+        $mesActualIni = date('Y-m-01');
+        $mesActualFin = date('Y-m-t');
+        $mesPrevIni = date('Y-m-01', strtotime('last month'));
+        $mesPrevFin = date('Y-m-t', strtotime('last month'));
+
+        $actual = $this->ofrendaModel->obtenerPorPeriodo($mesActualIni, $mesActualFin);
+        $previo = $this->ofrendaModel->obtenerPorPeriodo($mesPrevIni, $mesPrevFin);
+        $totalActual = array_sum(array_column($actual, 'monto'));
+        $totalPrevio = array_sum(array_column($previo, 'monto'));
+        $variacion = $totalPrevio > 0 ? (($totalActual - $totalPrevio) / $totalPrevio) * 100 : null;
+
         return [
+            'totales' => [
+                'mes_actual' => $totalActual,
+                'mes_anterior' => $totalPrevio,
+                'variacion_pct' => $variacion
+            ],
             'ofrendas_pendientes' => $this->obtenerInformeOfrendasPendientes(),
-            'ofrendas_por_area_mes' => $this->ofrendaModel->obtenerTotalPorArea(
-                date('Y-m-01'),
-                date('Y-m-t')
-            ),
-            'ofrendas_por_area_mes_anterior' => $this->ofrendaModel->obtenerTotalPorArea(
-                date('Y-m-01', strtotime('last month')),
-                date('Y-m-t', strtotime('last month'))
-            )
+            'resumen_estados' => $this->ofrendaModel->resumenEstados(),
+            'totales_por_mes' => $this->ofrendaModel->totalesPorMes(6),
+            'ofrendas_por_area_mes' => $this->ofrendaModel->obtenerTotalPorArea($mesActualIni, $mesActualFin)
         ];
     }
     

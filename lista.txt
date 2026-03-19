@@ -124,41 +124,42 @@ Referencia: PROMPT DE DESARROLLO
 ✓ API: GET /api/ofrendas.php?accion=listar / obtener
 ✓ API: POST /api/ofrendas.php?accion=cambiar-estado / eliminar
 ✗ Alta manual: desactivada para evitar duplicados (alta se realiza desde Reuniones)
-✗ Alta vía Reuniones: documentar/validar anti-duplicados
-✗ Historial completo: guardar fecha/usuario por cada cambio (bitácora expuesta)
-✗ Dashboard financiero / gráfica mensual / reporte total de ofrendas
+✓ Alta vía Reuniones: validada para evitar duplicados (check previo)
+✓ Historial: detallado expuesto en API (auditoría) con usuario/estado anterior-nuevo
+✓ Dashboard financiero (vista para pastor/tesorero): totales mes, variación, resumen por estado, top por área, gráfica últimos 6 meses
 
 ================================================================================
 9. MÓDULO DE SERVIDORES
 ================================================================================
-✗ Vista: Listar servidores
-✗ Vista: Crear servidor
-✗ Vista: Editar servidor
-✗ Vista: Perfil de servidor
-✗ Controller: ServidoresController
-✗ Model: Servidor
-✗ API: GET /api/servidores.php
-✗ API: POST /api/servidores.php
-✗ API: PUT /api/servidores.php
-✗ Campo: Nombre completo
-✗ Campo: Teléfono
-✗ Campo: Email
-✗ Campo: Dirección
-✗ Campo: Área de servicio
-✗ Campo: Fecha de ingreso
-✗ Campo: Código único de membresía
-✗ Áreas predefinidas: Jóvenes
-✗ Áreas predefinidas: Multimedia
-✗ Áreas predefinidas: Matrimonios
-✗ Áreas predefinidas: Mujeres
-✗ Áreas predefinidas: Tráfico
-✗ Áreas predefinidas: Protocolo
-✗ Áreas predefinidas: Hombres
-✗ Áreas predefinidas: Células Familiares
-✗ Crear nuevas áreas dinámicamente
+✓ Vista: Listar servidores (tabla + tarjetas mobile, filtros)
+✓ Vista: Crear servidor (modal)
+✓ Vista: Editar servidor (modal)
+✗ Vista: Perfil de servidor (detalle ampliado en página aparte)
+✓ Controller: ServidoresController
+✓ Model: Servidor
+✓ API: GET /api/servidores.php (listar/obtener)
+✓ API: POST /api/servidores.php (crear)
+✓ API: PUT/PATCH /api/servidores.php (actualizar)
+✓ API: DELETE /api/servidores.php (eliminar)
+✓ Campo: Nombre completo
+✓ Campo: Teléfono
+✓ Campo: Email
+✓ Campo: Dirección
+✓ Campo: Área(s) de servicio (multi-área con selector de chips)
+✓ Campo: Fecha de ingreso
+✓ Campo: Código único de membresía
+✓ Campos extra: DUI, género, fecha de nacimiento, bautizado/fecha bautizo
+✓ Áreas predefinidas cargadas (Jóvenes, Multimedia, etc.)
+✓ Áreas predefinidas: Matrimonios
+✓ Áreas predefinidas: Mujeres
+✓ Áreas predefinidas: Tráfico
+✓ Áreas predefinidas: Protocolo
+✓ Áreas predefinidas: Hombres
+✓ Áreas predefinidas: Células Familiares
+✓ Crear nuevas áreas dinámicamente (resuelto con Módulo de Áreas/Ministerios)
 
 ================================================================================
-10. MÓDULO DE DELEGACIÓN DE LIDERAZGO
+11. MÓDULO DE DELEGACIÓN DE LIDERAZGO
 ================================================================================
 ✗ Vista: Jerarquía de líderes
 ✗ Vista: Asignar líder
@@ -173,7 +174,7 @@ Referencia: PROMPT DE DESARROLLO
 ✗ Funcionalidad: Ver cadena de liderazgo
 
 ================================================================================
-11. MÓDULO DE MATERIAL DE ESTUDIO
+12. MÓDULO DE MATERIAL DE ESTUDIO
 ================================================================================
 ✗ Vista: Subir materiales
 ✗ Vista: Listar materiales
@@ -249,15 +250,28 @@ Referencia: PROMPT DE DESARROLLO
 ✓ CelulasController
 ✓ ReunionesController
 ✗ OfrendasController
-✗ ServidoresController
+✓ ServidoresController
 ✗ DelegacionesController
 ✗ MaterialesController
 ✗ NotificacionesController
 ✗ AuditoriaController
-✗ Todas las vistas del sistema
-✗ Navbar/Header común
-✗ Footer común
-✗ Sidebar/Menu común
+
+================================================================================
+10. MÓDULO DE ÁREAS / MINISTERIOS
+================================================================================ 
+✓ Vista: Listar áreas/ministerios
+✓ Vista: Crear área
+✓ Vista: Editar área
+✓ Controller: AreasController
+✓ Model: Area
+✓ API: GET /api/areas.php
+✓ API: POST /api/areas.php
+✓ API: PUT /api/areas.php
+✓ API: DELETE /api/areas.php
+✓ Campos: Nombre, Descripción, Líder de área, Estado (activa/pausada), Fecha de creación
+✓ Navbar/Header común
+✓ Footer común
+✓ Sidebar/Menu común
 
 ================================================================================
 16. DISEÑO MOBILE FIRST
@@ -278,12 +292,10 @@ Referencia: PROMPT DE DESARROLLO
 PRÓXIMOS PASOS / MAPA DE CONTINUACIÓN
 -------------------------------------------------------------------------------
 - Módulo de Células: ✔ listo (UI/UX mobile y CRUD con baja lógica).
-- Optimizar carga (pendiente global): minificar/lazy-load assets (Tailwind/CDN, Chart.js solo donde aplique).
+- Módulo de Reuniones: ✔ listo (tabla/cards, filtros, modal detalle, toggle estado). Pendiente: notificación “célula sin reporte”.
+- Módulo de Ofrendas: operativo (listar, ver, cambiar/revertir, eliminar, dashboard financiero). Pendiente: documentar/validar alta vía Reuniones (anti-duplicados).
+- Optimizar carga (pendiente global): minificar/lazy-load assets (Tailwind/CDN), cargar Chart.js solo donde aplique.
 - Pruebas en dispositivos reales (pendiente global): Android, iPhone, tablet, desktop.
-- Próximo foco: Módulo de Reuniones
-  * Revisar UI/UX mobile-first (tabla vs tarjetas, acciones).
-  * Replicar filtros, paginación y estados como en Células.
-  * Integrar historial/asistencias/ofrendas y validaciones.
 
 ================================================================================
 17. GRÁFICAS Y REPORTES
@@ -411,7 +423,8 @@ PRÓXIMAS PRIORIDADES:
 2. ✓ Módulo de células [COMPLETADO]
 3. ⏳ Módulo de reuniones
 4. ⏳ Módulo de ofrendas con estados
-5. ⏳ Módulo de servidores
+5. ✅ Módulo de servidores (CRUD completo; pendiente sólo perfil en página dedicada)
+6. ⏳ Módulo de áreas/ministerios (CRUD catálogo de áreas de servicio)
 
 ================================================================================
 -------------------------------------------------------------------------------
@@ -420,4 +433,3 @@ PENDIENTES ESPECIFICOS
 - Celulas: Notificacion automatica de "celula sin reporte" (sigue pendiente).
 - Reuniones: Notificacion "celula sin reporte" (automatizada desde reuniones) pendiente.
 - Global: Carga rapida (optimizacion) -> marcar solo tras minificar/optimizar assets o confirmar peso aceptable.
-

@@ -61,6 +61,17 @@ require_once __DIR__ . '/icons.php';
                     </a>
                 </li>
                 <li>
+                    <a href="<?php echo BASE_URL; ?>areas" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition group">
+                        <span class="text-white group-hover:text-purple-300">
+                            <?php echo tcad_icon('cells', 'w-5 h-5'); ?>
+                        </span>
+                        <div class="flex-1">
+                            <span class="block">Áreas / Ministerios</span>
+                            <span class="text-xs text-gray-400">Catálogo y líderes de área</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
                     <a href="<?php echo BASE_URL; ?>servidores" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition group">
                         <span class="text-white group-hover:text-purple-300">
                             <?php echo tcad_icon('servers', 'w-5 h-5'); ?>

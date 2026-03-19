@@ -242,6 +242,14 @@ class Ofrenda extends Model {
     public function registrar($datos) {
         $datos['estado'] = $datos['estado'] ?? 'reportada';
         $datos['fecha_reporte'] = $datos['fecha_reporte'] ?? date('Y-m-d H:i:s');
+        if (!empty($datos['reunion_id'])) {
+            $stmt = $this->conexion->prepare("SELECT id FROM ofrendas WHERE reunion_id = :rid LIMIT 1");
+            $stmt->bindParam(':rid', $datos['reunion_id'], PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->fetch()) {
+                throw new Exception('Ya existe una ofrenda para esta reunión');
+            }
+        }
         return $this->insertar($datos);
     }
 
@@ -255,6 +263,59 @@ class Ofrenda extends Model {
                 ORDER BY fecha_hora DESC";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Historial con detalle (usuario y estados antes/después)
+     */
+    public function obtenerHistorialDetallado($id) {
+        $sql = "SELECT a.fecha_hora, a.usuario_id, u.nombre_completo,
+                       a.valor_anterior, a.valor_nuevo
+                  FROM auditoria a
+                  LEFT JOIN usuarios u ON a.usuario_id = u.id
+                 WHERE a.tabla_afectada = 'ofrendas' AND a.registro_id = :id
+                 ORDER BY a.fecha_hora DESC";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+        // Decodificar estados
+        foreach ($rows as &$row) {
+            $prev = json_decode($row['valor_anterior'] ?? '{}', true);
+            $next = json_decode($row['valor_nuevo'] ?? '{}', true);
+            $row['estado_anterior'] = $prev['estado'] ?? null;
+            $row['estado_nuevo'] = $next['estado'] ?? null;
+        }
+        return $rows;
+    }
+
+    /**
+     * Resumen por estado
+     */
+    public function resumenEstados() {
+        $sql = "SELECT estado, COUNT(*) as cantidad, SUM(monto) as total
+                  FROM ofrendas
+                 GROUP BY estado";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Totales por mes (últimos N meses)
+     */
+    public function totalesPorMes($meses = 6) {
+        $sql = "SELECT DATE_FORMAT(fecha_reporte,'%Y-%m') as mes,
+                       SUM(monto) as total,
+                       COUNT(*) as cantidad
+                  FROM ofrendas
+                 WHERE fecha_reporte >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL :meses MONTH),'%Y-%m-01')
+                 GROUP BY mes
+                 ORDER BY mes";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bindParam(':meses', $meses, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

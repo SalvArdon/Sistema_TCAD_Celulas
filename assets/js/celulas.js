@@ -28,10 +28,17 @@
   });
 
   async function cargarOpciones() {
+    // áreas desde API nueva
+    try {
+      const respAreas = await fetch(`${BASE_URL}api/areas.php?accion=listar&estado=activa&limite=500`);
+      const jsonAreas = await respAreas.json();
+      opciones.areas = jsonAreas?.data || [];
+    } catch (e) { opciones.areas = []; }
+
     const resp = await fetch(`${BASE_URL}api/celulas.php?accion=opciones`);
     const json = await resp.json();
     if (!json.exito) return;
-    opciones = json.data;
+    opciones = { ...json.data, areas: opciones.areas.length ? opciones.areas : json.data.areas };
     poblarSelect("lider_id", opciones.lideres, "Seleccione líder");
     poblarSelect(
       "lider_area_id",

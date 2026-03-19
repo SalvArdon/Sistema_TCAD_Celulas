@@ -91,7 +91,7 @@ try {
                 echo json_encode(['exito'=>false,'mensaje'=>'ID requerido']);
                 break;
             }
-            echo json_encode($ofrendaController->historial($id));
+            echo json_encode($ofrendaController->historialDetallado($id));
             break;
 
         case 'eliminar':

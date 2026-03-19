@@ -74,12 +74,13 @@ try {
             $limite = isset($_GET['limite']) ? (int)$_GET['limite'] : REGISTROS_POR_PAGINA;
             $orden = strtoupper($_GET['orden'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
 
-            $filtros = [
-                'celula_id' => $_GET['celula_id'] ?? null,
-                'estado' => $_GET['estado'] ?? null, // pendiente | hoy | realizada | todos/null
-                'fecha_inicio' => $_GET['fecha_inicio'] ?? null,
-                'fecha_fin' => $_GET['fecha_fin'] ?? null
-            ];
+              $filtros = [
+                  'celula_id' => $_GET['celula_id'] ?? null,
+                  'area_id' => $_GET['area_id'] ?? null,
+                  'estado' => $_GET['estado'] ?? null, // pendiente | hoy | realizada | todos/null
+                  'fecha_inicio' => $_GET['fecha_inicio'] ?? null,
+                  'fecha_fin' => $_GET['fecha_fin'] ?? null
+              ];
 
             $respuesta = $reunionController->listar($filtros, $pagina, $limite, $orden);
             echo json_encode(array_merge(['exito' => true], $respuesta));

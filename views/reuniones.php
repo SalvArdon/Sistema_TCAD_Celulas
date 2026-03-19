@@ -53,19 +53,25 @@ validarRol(['pastor','lider_area','lider_celula','tesorero']);
                         <input type="hidden" id="filtro-celula-id">
                         <div id="filtro-celula-suggestions" class="hidden bg-white border rounded-lg mt-1 shadow max-h-48 overflow-y-auto text-sm"></div>
                     </div>
-                    <div>
-                        <label class="text-xs text-gray-600">Desde</label>
-                        <input type="date" id="filtro-inicio" class="w-full border rounded-lg px-3 py-2">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-600">Hasta</label>
-                        <input type="date" id="filtro-fin" class="w-full border rounded-lg px-3 py-2">
-                    </div>
-                    <div class="flex items-end gap-2">
-                        <button class="bg-gray-200 px-4 py-3 min-h-[44px] rounded-lg text-sm" onclick="limpiarFiltros()">Limpiar</button>
-                        <button class="bg-purple-600 text-white px-5 py-3 min-h-[44px] rounded-lg shadow text-sm" onclick="cargarReuniones()">Aplicar</button>
-                    </div>
+                <div>
+                    <label class="text-xs text-gray-600">Desde</label>
+                    <input type="date" id="filtro-inicio" class="w-full border rounded-lg px-3 py-2">
                 </div>
+                <div>
+                    <label class="text-xs text-gray-600">Hasta</label>
+                    <input type="date" id="filtro-fin" class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-600">Área</label>
+                    <select id="filtro-area" class="w-full border rounded-lg px-3 py-2">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <div class="flex items-end gap-2">
+                    <button class="bg-gray-200 px-4 py-3 min-h-[44px] rounded-lg text-sm" onclick="limpiarFiltros()">Limpiar</button>
+                    <button class="bg-purple-600 text-white px-5 py-3 min-h-[44px] rounded-lg shadow text-sm" onclick="cargarReuniones()">Aplicar</button>
+                </div>
+            </div>
 
                 <!-- Tabla desktop -->
                 <div class="hidden sm:block bg-white rounded-xl shadow overflow-hidden max-w-screen-lg mx-auto">

@@ -20,7 +20,15 @@ class Reunion extends Model {
         // Registrar ofrenda si existe
         if ($datos_ofrenda && $datos_ofrenda['monto'] > 0) {
             $datos_ofrenda['reunion_id'] = $reunion_id;
-            
+
+            // Evitar duplicados por reunion_id
+            $stmtCheck = $this->conexion->prepare("SELECT id FROM ofrendas WHERE reunion_id = :rid LIMIT 1");
+            $stmtCheck->bindValue(':rid', $reunion_id, PDO::PARAM_INT);
+            $stmtCheck->execute();
+            if ($stmtCheck->fetch()) {
+                throw new Exception('Ya existe una ofrenda para esta reunión');
+            }
+
             $sql_ofrenda = "INSERT INTO ofrendas (reunion_id, monto, estado, lider_reporta_id, fecha_reporte) 
                            VALUES (:reunion_id, :monto, :estado, :lider_reporta_id, NOW())";
             
@@ -122,6 +130,7 @@ class Reunion extends Model {
         $sql = "SELECT 
                     r.*,
                     c.nombre AS celula_nombre,
+                    c.area_servicio_id,
                     u.nombre_completo AS lider_nombre,
                     o.monto AS ofrenda_monto,
                     o.estado AS ofrenda_estado
@@ -135,6 +144,11 @@ class Reunion extends Model {
         if (!empty($filtros['celula_id'])) {
             $sql .= " AND r.celula_id = :celula_id";
             $params[':celula_id'] = (int)$filtros['celula_id'];
+        }
+
+        if (!empty($filtros['area_id'])) {
+            $sql .= " AND c.area_servicio_id = :area_id";
+            $params[':area_id'] = (int)$filtros['area_id'];
         }
 
         if (!empty($filtros['fecha_inicio'])) {
@@ -171,12 +185,20 @@ class Reunion extends Model {
     }
 
     public function contar($filtros = []) {
-        $sql = "SELECT COUNT(*) as total FROM reuniones r WHERE 1 = 1";
+        $sql = "SELECT COUNT(*) as total 
+                FROM reuniones r 
+                LEFT JOIN celulas c ON r.celula_id = c.id
+                WHERE 1 = 1";
         $params = [];
 
         if (!empty($filtros['celula_id'])) {
             $sql .= " AND r.celula_id = :celula_id";
             $params[':celula_id'] = (int)$filtros['celula_id'];
+        }
+
+        if (!empty($filtros['area_id'])) {
+            $sql .= " AND c.area_servicio_id = :area_id";
+            $params[':area_id'] = (int)$filtros['area_id'];
         }
 
         if (!empty($filtros['fecha_inicio'])) {
