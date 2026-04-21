@@ -1,274 +1,407 @@
-﻿-- ================================================================
--- SCRIPT DE DATOS DE PRUEBA - TCAD CÉLULAS
--- Inserta usuarios, células y ejemplos para pruebas
 -- ================================================================
-
--- IMPORTANTE: Ejecuta primero el script tcad_celulas.sql antes de esto
+-- SCRIPT DE DATOS DE PRUEBA - TCAD CELULAS
+-- Compatible con: database/tcad_celulas_db.sql
+-- ================================================================
+-- Este script asume que ya ejecutaste tcad_celulas_db.sql.
+-- Incluye inserciones idempotentes para evitar errores por duplicados.
 
 USE tcad_celulas;
 
--- ================================================================
--- INSERTAR USUARIOS DE PRUEBA
--- Contraseña para todos: password123
--- Hash Argon2ID: $2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8
--- ================================================================
+START TRANSACTION;
 
--- 1. PASTOR (Acceso Total)
-INSERT INTO usuarios (nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo)
-VALUES (
+-- Password para todos los usuarios de prueba: Admin123!
+SET @password_hash = '$argon2id$v=19$m=65536,t=4,p=3$ZXhYd3FSWC9MSE9pUHd3NQ$cVUToIarWh1/pysMeVMJWkanN0i25xMEr1CoLf7fXyM';
+
+-- ================================================================
+-- USUARIOS
+-- ================================================================
+INSERT INTO usuarios (
+    nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo
+) VALUES
+(
     'Pastor Principal',
     'pastor@iglesia.com',
     '+503 7123-4567',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    1,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'pastor' LIMIT 1),
     'MEM000001',
-    NOW(),
+    CURDATE(),
     TRUE
-);
-
--- 2. LIDER DE AREA - Jovenes
-INSERT INTO usuarios (nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo)
-VALUES (
-    'María García - Líder Jóvenes',
+),
+(
+    'Maria Garcia - Lider Jovenes',
     'lider.jovenes@iglesia.com',
     '+503 7234-5678',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    2,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'lider_area' LIMIT 1),
     'MEM000002',
-    NOW(),
+    CURDATE(),
     TRUE
-);
-
--- 3. LIDER DE AREA - Matrimonios
-INSERT INTO usuarios (nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo)
-VALUES (
-    'Carlos López - Líder Matrimonios',
+),
+(
+    'Carlos Lopez - Lider Matrimonios',
     'lider.matrimonios@iglesia.com',
     '+503 7345-6789',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    2,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'lider_area' LIMIT 1),
     'MEM000003',
-    NOW(),
+    CURDATE(),
     TRUE
-);
-
--- 4. LIDER DE CELULA - Centro
-INSERT INTO usuarios (nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo)
-VALUES (
-    'Juan Pérez - Líder Célula Centro',
+),
+(
+    'Juan Perez - Lider Celula Centro',
     'juan.perez@iglesia.com',
     '+503 7456-7890',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    3,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'lider_celula' LIMIT 1),
     'MEM000004',
-    NOW(),
+    CURDATE(),
     TRUE
-);
-
--- 5. LIDER DE CELULA - San Benito
-INSERT INTO usuarios (nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo)
-VALUES (
-    'Ana Martínez - Líder Célula San Benito',
+),
+(
+    'Ana Martinez - Lider Celula San Benito',
     'ana.martinez@iglesia.com',
     '+503 7567-8901',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    3,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'lider_celula' LIMIT 1),
     'MEM000005',
-    NOW(),
+    CURDATE(),
     TRUE
-);
-
--- 6. TESORERO
-INSERT INTO usuarios (nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo)
-VALUES (
-    'David Rodríguez - Tesorero',
+),
+(
+    'David Rodriguez - Tesorero',
     'tesorero@iglesia.com',
     '+503 7678-9012',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    4,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'tesorero' LIMIT 1),
     'MEM000006',
-    NOW(),
+    CURDATE(),
     TRUE
-);
-
--- 7. SERVIDORES (Miembros)
-INSERT INTO usuarios (nombre_completo, correo, telefono, password_hash, rol_id, codigo_membresia, fecha_ingreso, activo)
-VALUES (
-    'Roberto García',
+),
+(
+    'Roberto Garcia',
     'roberto@iglesia.com',
     '+503 7789-0123',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    5,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'servidor' LIMIT 1),
     'MEM000007',
-    NOW(),
+    CURDATE(),
     TRUE
-), (
-    'Marta Sánchez',
+),
+(
+    'Marta Sanchez',
     'marta@iglesia.com',
     '+503 7890-1234',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    5,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'servidor' LIMIT 1),
     'MEM000008',
-    NOW(),
+    CURDATE(),
     TRUE
-), (
+),
+(
     'Pedro Flores',
     'pedro@iglesia.com',
     '+503 7901-2345',
-    '$2y$10$bDz5Z6H9V2tKm1L8P9Q0ZOKq0RnZ8X5Z0Y0A1B2C3D4E5F6G7H8',
-    5,
+    @password_hash,
+    (SELECT id FROM roles WHERE nombre = 'servidor' LIMIT 1),
     'MEM000009',
-    NOW(),
+    CURDATE(),
     TRUE
-);
+)
+ON DUPLICATE KEY UPDATE
+    nombre_completo = VALUES(nombre_completo),
+    telefono = VALUES(telefono),
+    password_hash = VALUES(password_hash),
+    rol_id = VALUES(rol_id),
+    activo = VALUES(activo);
 
 -- ================================================================
--- ACTUALIZAR LÍDERES DE ÁREAS
+-- LIDERES DE AREA
 -- ================================================================
+UPDATE areas_servicio a
+JOIN usuarios u ON u.correo = 'lider.jovenes@iglesia.com'
+SET a.lider_id = u.id
+WHERE a.nombre = 'Jovenes';
 
-UPDATE areas_servicio SET lider_id = 2 WHERE nombre = 'Jóvenes';
-UPDATE areas_servicio SET lider_id = 3 WHERE nombre = 'Matrimonios';
-
--- ================================================================
--- REGISTRAR SERVIDORES
--- ================================================================
-
-INSERT INTO servidores (usuario_id, area_servicio_id, genero, bautizado, activo) VALUES
-(7, 1, 'M', TRUE, TRUE),
-(8, 3, 'F', TRUE, TRUE),
-(9, 7, 'M', TRUE, TRUE);
+UPDATE areas_servicio a
+JOIN usuarios u ON u.correo = 'lider.matrimonios@iglesia.com'
+SET a.lider_id = u.id
+WHERE a.nombre = 'Matrimonios';
 
 -- ================================================================
--- INSERTAR CÉLULAS
+-- SERVIDORES
 -- ================================================================
-
-INSERT INTO celulas (nombre, lider_id, lider_area_id, area_servicio_id, direccion, zona, dia_semana, hora_inicio, estado, cantidad_promedio_asistentes)
-VALUES
--- Célula Centro
-(
-    'Célula Centro',
-    4,
-    2,
-    1,
-    'Calle Principal 123, Centro',
-    'Centro',
-    'Lunes',
-    '19:00',
-    'activa',
-    12
-),
--- Célula San Benito
-(
-    'Célula San Benito',
-    5,
-    2,
-    1,
-    'Avenida Independencia 456, San Benito',
-    'San Benito',
-    'Miércoles',
-    '19:30',
-    'activa',
-    15
-);
+INSERT INTO servidores (
+    usuario_id, area_servicio_id, dui, genero, fecha_nacimiento, bautizado, activo
+)
+SELECT
+    u.id,
+    a.id,
+    x.dui,
+    x.genero,
+    x.fecha_nacimiento,
+    x.bautizado,
+    TRUE
+FROM (
+    SELECT 'roberto@iglesia.com' AS correo, 'Jovenes' AS area, '01234567-8' AS dui, 'M' AS genero, '1998-01-10' AS fecha_nacimiento, TRUE AS bautizado
+    UNION ALL
+    SELECT 'marta@iglesia.com', 'Matrimonios', '02345678-9', 'F', '1999-05-22', TRUE
+    UNION ALL
+    SELECT 'pedro@iglesia.com', 'Hombres', '03456789-0', 'M', '2000-07-15', TRUE
+) x
+JOIN usuarios u ON u.correo = x.correo
+JOIN areas_servicio a ON a.nombre = x.area
+ON DUPLICATE KEY UPDATE
+    genero = VALUES(genero),
+    fecha_nacimiento = VALUES(fecha_nacimiento),
+    bautizado = VALUES(bautizado),
+    activo = VALUES(activo);
 
 -- ================================================================
--- INSERTAR REUNIONES DE EJEMPLO
+-- CELULAS
 -- ================================================================
+INSERT INTO celulas (
+    nombre, lider_id, lider_area_id, anfitrion_id, area_servicio_id, direccion, zona, dia_semana, hora_inicio, estado, cantidad_promedio_asistentes
+)
+SELECT
+    x.nombre,
+    ul.id AS lider_id,
+    ula.id AS lider_area_id,
+    ua.id AS anfitrion_id,
+    ar.id AS area_servicio_id,
+    x.direccion,
+    x.zona,
+    x.dia_semana,
+    x.hora_inicio,
+    'activa' AS estado,
+    x.promedio
+FROM (
+    SELECT
+        'Celula Centro' AS nombre,
+        'juan.perez@iglesia.com' AS lider_correo,
+        'lider.jovenes@iglesia.com' AS lider_area_correo,
+        'roberto@iglesia.com' AS anfitrion_correo,
+        'Jovenes' AS area_nombre,
+        'Calle Principal 123, Centro' AS direccion,
+        'Centro' AS zona,
+        'Lunes' AS dia_semana,
+        '19:00:00' AS hora_inicio,
+        12 AS promedio
+    UNION ALL
+    SELECT
+        'Celula San Benito',
+        'ana.martinez@iglesia.com',
+        'lider.jovenes@iglesia.com',
+        'marta@iglesia.com',
+        'Jovenes',
+        'Avenida Independencia 456, San Benito',
+        'San Benito',
+        'Miercoles',
+        '19:30:00',
+        15
+) x
+JOIN usuarios ul ON ul.correo = x.lider_correo
+LEFT JOIN usuarios ula ON ula.correo = x.lider_area_correo
+LEFT JOIN usuarios ua ON ua.correo = x.anfitrion_correo
+JOIN areas_servicio ar ON ar.nombre = x.area_nombre
+ON DUPLICATE KEY UPDATE
+    lider_id = VALUES(lider_id),
+    lider_area_id = VALUES(lider_area_id),
+    anfitrion_id = VALUES(anfitrion_id),
+    area_servicio_id = VALUES(area_servicio_id),
+    direccion = VALUES(direccion),
+    zona = VALUES(zona),
+    dia_semana = VALUES(dia_semana),
+    hora_inicio = VALUES(hora_inicio),
+    estado = VALUES(estado),
+    cantidad_promedio_asistentes = VALUES(cantidad_promedio_asistentes);
 
-INSERT INTO reuniones (celula_id, fecha_reunion, realizada, cantidad_asistentes, cantidad_nuevos, lider_reporta_id, comentarios, temas_tratados)
-VALUES
-(
-    1,
-    DATE_SUB(CURDATE(), INTERVAL 1 DAY),
+-- ================================================================
+-- REUNIONES
+-- ================================================================
+INSERT INTO reuniones (
+    celula_id, fecha_reunion, realizada, cantidad_asistentes, cantidad_nuevos, lider_reporta_id, comentarios, temas_tratados
+)
+SELECT
+    c.id,
+    x.fecha_reunion,
     TRUE,
-    12,
-    1,
-    4,
-    'Buena asistencia. Grupo muy participativo.',
-    'La Gracia de Dios - Efesios 2:8-9'
-),
-(
-    2,
-    DATE_SUB(CURDATE(), INTERVAL 3 DAY),
+    x.asistentes,
+    x.nuevos,
+    u.id,
+    x.comentarios,
+    x.temas
+FROM (
+    SELECT
+        'Celula Centro' AS celula_nombre,
+        DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS fecha_reunion,
+        12 AS asistentes,
+        1 AS nuevos,
+        'juan.perez@iglesia.com' AS lider_correo,
+        'Buena asistencia y participacion del grupo.' AS comentarios,
+        'La gracia de Dios - Efesios 2:8-9' AS temas
+    UNION ALL
+    SELECT
+        'Celula San Benito',
+        DATE_SUB(CURDATE(), INTERVAL 3 DAY),
+        14,
+        2,
+        'ana.martinez@iglesia.com',
+        'Excelente reunion con testimonios de fe.',
+        'Fe y obras - Santiago 2:26'
+) x
+JOIN celulas c ON c.nombre = x.celula_nombre
+JOIN usuarios u ON u.correo = x.lider_correo
+ON DUPLICATE KEY UPDATE
+    realizada = VALUES(realizada),
+    cantidad_asistentes = VALUES(cantidad_asistentes),
+    cantidad_nuevos = VALUES(cantidad_nuevos),
+    lider_reporta_id = VALUES(lider_reporta_id),
+    comentarios = VALUES(comentarios),
+    temas_tratados = VALUES(temas_tratados);
+
+-- ================================================================
+-- OFRENDAS
+-- ================================================================
+INSERT INTO ofrendas (
+    reunion_id, monto, moneda, estado, lider_reporta_id, usuario_recibe_id, usuario_concilia_id,
+    fecha_reporte, fecha_recepcion, fecha_conciliacion, notas, descrepancia
+)
+SELECT
+    r.id,
+    x.monto,
+    'USD',
+    x.estado,
+    ul.id AS lider_reporta_id,
+    ur.id AS usuario_recibe_id,
+    uc.id AS usuario_concilia_id,
+    x.fecha_reporte,
+    x.fecha_recepcion,
+    x.fecha_conciliacion,
+    x.notas,
+    x.descrepancia
+FROM (
+    SELECT
+        'Celula Centro' AS celula_nombre,
+        DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS fecha_reunion,
+        125.50 AS monto,
+        'reportada' AS estado,
+        'juan.perez@iglesia.com' AS lider_correo,
+        NULL AS recibe_correo,
+        NULL AS concilia_correo,
+        DATE_SUB(NOW(), INTERVAL 1 DAY) AS fecha_reporte,
+        NULL AS fecha_recepcion,
+        NULL AS fecha_conciliacion,
+        'Pendiente de recepcion por tesoreria.' AS notas,
+        NULL AS descrepancia
+    UNION ALL
+    SELECT
+        'Celula San Benito',
+        DATE_SUB(CURDATE(), INTERVAL 3 DAY),
+        150.00,
+        'conciliada',
+        'ana.martinez@iglesia.com',
+        'tesorero@iglesia.com',
+        'tesorero@iglesia.com',
+        DATE_SUB(NOW(), INTERVAL 3 DAY),
+        DATE_SUB(NOW(), INTERVAL 3 DAY),
+        DATE_SUB(NOW(), INTERVAL 2 DAY),
+        'Conciliacion completa sin diferencias.',
+        0.00
+) x
+JOIN celulas c ON c.nombre = x.celula_nombre
+JOIN reuniones r ON r.celula_id = c.id AND r.fecha_reunion = x.fecha_reunion
+JOIN usuarios ul ON ul.correo = x.lider_correo
+LEFT JOIN usuarios ur ON ur.correo = x.recibe_correo
+LEFT JOIN usuarios uc ON uc.correo = x.concilia_correo
+ON DUPLICATE KEY UPDATE
+    monto = VALUES(monto),
+    estado = VALUES(estado),
+    lider_reporta_id = VALUES(lider_reporta_id),
+    usuario_recibe_id = VALUES(usuario_recibe_id),
+    usuario_concilia_id = VALUES(usuario_concilia_id),
+    fecha_reporte = VALUES(fecha_reporte),
+    fecha_recepcion = VALUES(fecha_recepcion),
+    fecha_conciliacion = VALUES(fecha_conciliacion),
+    notas = VALUES(notas),
+    descrepancia = VALUES(descrepancia);
+
+-- ================================================================
+-- DELEGACIONES
+-- ================================================================
+INSERT INTO delegaciones (
+    usuario_delegador_id, usuario_delegado_id, area_servicio_id, celula_id, rol_nuevo, activa, fecha_delegacion, razon
+)
+SELECT
+    udel.id,
+    udeg.id,
+    ar.id,
+    NULL,
+    NULL,
     TRUE,
-    14,
-    2,
-    5,
-    'Excelente célula. Muchas oraciones contestadas.',
-    'Fe y Obras - Santiago 2:26'
+    CURDATE(),
+    x.razon
+FROM (
+    SELECT 'pastor@iglesia.com' AS delegador, 'lider.jovenes@iglesia.com' AS delegado, 'Jovenes' AS area_nombre, 'Delegacion liderazgo area Jovenes' AS razon
+    UNION ALL
+    SELECT 'pastor@iglesia.com', 'lider.matrimonios@iglesia.com', 'Matrimonios', 'Delegacion liderazgo area Matrimonios'
+    UNION ALL
+    SELECT 'lider.jovenes@iglesia.com', 'juan.perez@iglesia.com', 'Jovenes', 'Delegacion como lider de Celula Centro'
+) x
+JOIN usuarios udel ON udel.correo = x.delegador
+JOIN usuarios udeg ON udeg.correo = x.delegado
+JOIN areas_servicio ar ON ar.nombre = x.area_nombre
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM delegaciones d
+    WHERE d.usuario_delegador_id = udel.id
+      AND d.usuario_delegado_id = udeg.id
+      AND d.area_servicio_id = ar.id
+      AND d.activa = TRUE
 );
 
 -- ================================================================
--- INSERTAR OFRENDAS
+-- NOTIFICACIONES
 -- ================================================================
-
-INSERT INTO ofrendas (reunion_id, monto, moneda, estado, lider_reporta_id, fecha_reporte)
-VALUES
-(
-    1,
-    125.50,
-    'USD',
-    'reportada',
-    4,
-    DATE_SUB(NOW(), INTERVAL 1 DAY)
-),
-(
-    2,
-    150.00,
-    'USD',
-    'conciliada',
-    5,
-    DATE_SUB(NOW(), INTERVAL 3 DAY)
-);
-
--- Actualizar estado de segunda ofrenda
-UPDATE ofrendas SET 
-    estado = 'conciliada',
-    usuario_recibe_id = 6,
-    fecha_recepcion = DATE_SUB(NOW(), INTERVAL 3 DAY),
-    usuario_concilia_id = 6,
-    fecha_conciliacion = DATE_SUB(NOW(), INTERVAL 2 DAY)
-WHERE id = 2;
-
--- ================================================================
--- INSERTAR DELEGACIONES
--- ================================================================
-
-INSERT INTO delegaciones (usuario_delegador_id, usuario_delegado_id, area_servicio_id, activa, fecha_delegacion, razon)
-VALUES
-(1, 2, 1, TRUE, NOW(), 'Delegación de liderazgo del área Jóvenes'),
-(1, 3, 3, TRUE, NOW(), 'Delegación de liderazgo del área Matrimonios'),
-(2, 4, 1, TRUE, NOW(), 'María delega a Juan como líder de célula Centro'),
-(2, 5, 1, TRUE, NOW(), 'María delega a Ana como líder de célula San Benito');
-
--- ================================================================
--- INSERTAR NOTIFICACIONES DE EJEMPLO
--- ================================================================
-
 INSERT INTO notificaciones (usuario_destino_id, titulo, mensaje, tipo, leida)
-VALUES
-(2, 'Nueva asignación', 'Has sido designado como Líder de Área Jóvenes', 'delegacion', FALSE),
-(4, 'Recordatorio', 'Tu célula tiene reporte pendiente de hace 3 días', 'alerta_reporte', FALSE),
-(6, 'Ofrenda pendiente', 'Hay una ofrenda sin confirmar recepción', 'ofrenda_pendiente', FALSE);
+SELECT
+    u.id,
+    x.titulo,
+    x.mensaje,
+    x.tipo,
+    FALSE
+FROM (
+    SELECT 'lider.jovenes@iglesia.com' AS correo, 'Nueva asignacion' AS titulo, 'Has sido designado como lider de area Jovenes.' AS mensaje, 'delegacion' AS tipo
+    UNION ALL
+    SELECT 'juan.perez@iglesia.com', 'Recordatorio', 'Tu celula tiene reporte pendiente.', 'alerta_reporte'
+    UNION ALL
+    SELECT 'tesorero@iglesia.com', 'Ofrenda pendiente', 'Existe una ofrenda sin confirmar recepcion.', 'ofrenda_pendiente'
+) x
+JOIN usuarios u ON u.correo = x.correo
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM notificaciones n
+    WHERE n.usuario_destino_id = u.id
+      AND n.titulo = x.titulo
+      AND n.tipo = x.tipo
+      AND n.leida = FALSE
+);
+
+COMMIT;
 
 -- ================================================================
--- INSERTAR AUDITORÍA DE EJEMPLO
+-- VERIFICACION RAPIDA
 -- ================================================================
-
-INSERT INTO auditoria (usuario_id, accion, tabla_afectada, registro_id, fecha_hora, ip_usuario)
-VALUES
-(1, 'insertar', 'usuarios', 2, NOW(), '127.0.0.1'),
-(1, 'insertar', 'celulas', 1, NOW(), '127.0.0.1'),
-(4, 'insertar', 'reuniones', 1, NOW(), '192.168.1.100'),
-(6, 'actualizar', 'ofrendas', 1, NOW(), '192.168.1.105');
-
--- ================================================================
--- FIN - DATOS DE PRUEBA INSERTADOS
--- ================================================================
-
--- Verificación
-SELECT 'Total de usuarios:' as info, COUNT(*) FROM usuarios;
-SELECT 'Total de células:', COUNT(*) FROM celulas;
-SELECT 'Total de reuniones:', COUNT(*) FROM reuniones;
-SELECT 'Total de ofrendas:', COUNT(*) FROM ofrendas;
-SELECT 'Total de auditoría:', COUNT(*) FROM auditoria;
+SELECT 'usuarios' AS tabla, COUNT(*) AS total FROM usuarios
+UNION ALL
+SELECT 'servidores', COUNT(*) FROM servidores
+UNION ALL
+SELECT 'celulas', COUNT(*) FROM celulas
+UNION ALL
+SELECT 'reuniones', COUNT(*) FROM reuniones
+UNION ALL
+SELECT 'ofrendas', COUNT(*) FROM ofrendas
+UNION ALL
+SELECT 'delegaciones', COUNT(*) FROM delegaciones
+UNION ALL
+SELECT 'notificaciones', COUNT(*) FROM notificaciones;
